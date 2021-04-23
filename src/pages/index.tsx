@@ -4,9 +4,11 @@
 
 import { GetStaticProps } from "next";
 import Image from "next/image";
-import { api } from "../services/api";
+import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import enUS from "date-fns/locale/en-US";
+
+import { api } from "../services/api";
 import { convertDurationToTimeString } from "../utils/convertDurationToTimeString";
 
 import styles from "./home.module.scss";
@@ -16,7 +18,6 @@ type Episode = {
 	title: string;
 	members: string;
 	thumbnail: string;
-	description: string;
 	url: string;
 	duration: number;
 	durationAsString: string;
@@ -42,7 +43,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 				<h2>Latest episodes</h2>
 
 				<ul>
-					{latestEpisodes.map((episode) => {
+					{latestEpisodes.map(episode => {
 						return (
 							<li key={episode.id}>
 								<Image
@@ -54,7 +55,9 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 								/>
 
 								<div className={styles.episodeDetails}>
-									<a href="">{episode.title}</a>
+									<Link href={`/episodes/${episode.id}`}>
+										<a>{episode.title}</a>
+									</Link>
 									<p>{episode.members}</p>
 									<span>{episode.publishedAt}</span>
 									<span>{episode.durationAsString}</span>
@@ -74,12 +77,14 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 
         <table cellSpacing={0}>
           <thead>
-            <th></th>
-            <th>Podcast</th>
-            <th>Featuring</th>
-            <th>Date</th>
-            <th>Duration</th>
-            <th></th>
+						<tr>
+							<th></th>
+							<th>Podcast</th>
+							<th>Featuring</th>
+							<th>Date</th>
+							<th>Duration</th>
+							<th></th>
+						</tr>
           </thead>
           <tbody>
             {allEpisodes.map(episode => {
@@ -95,8 +100,10 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                     />
                   </td>
                   <td>
-                    <a href="">{episode.title}</a>
-                  </td>
+										<Link href={`/episodes/${episode.id}`}>
+                    	<a>{episode.title}</a>
+										</Link>
+				          </td>
                   <td>{episode.members}</td>
                   <td style={{ width: 100 }}>{episode.publishedAt}</td>
                   <td>{episode.durationAsString}</td>
@@ -119,21 +126,20 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 // SSG
 export const getStaticProps: GetStaticProps = async () => {
 	// const response = await fetch('http://localhost:3333/episodes?_limit=12&_sort=publised_at&_order=desc')
-	const { data } = await api.get("episodes", {
+	const { data } = await api.get('episodes', {
 		params: {
 			_limit: 12,
 			_sort: "published_at",
-			_order: "desc",
+			_order: "desc"
 		},
 	});
 
-	const episodes = data.map((episode) => {
+	const episodes = data.map(episode => {
 		return {
 			id: episode.id,
 			title: episode.title,
 			members: episode.members,
 			thumbnail: episode.thumbnail,
-			description: episode.description,
 			url: episode.file.url,
 			duration: Number(episode.file.duration),
 			publishedAt: format(parseISO(episode.published_at), "EEE MMM yy", {
