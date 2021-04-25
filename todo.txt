@@ -1,7 +1,8 @@
 Challenges
 
-[] pause on current playing episode card
+[x] pause on current playing episode card
 [] make it responsive
 [] pwa version (next-pwa) -> Progressive Web Apps
 [] dark theme (get-omni)
 [] electro wrapper for desk app
+[] multi language support

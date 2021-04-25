@@ -11,7 +11,7 @@ import enUS from "date-fns/locale/en-US";
 
 import { api } from "../services/api";
 import { convertDurationToTimeString } from "../utils/convertDurationToTimeString";
-import { PlayerContext, usePlayer } from "../contexts/PlayerContext";
+import { usePlayer } from "../contexts/PlayerContext";
 
 import styles from "./home.module.scss";
 
@@ -39,7 +39,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 	//     .then(data => console.log(data))
 	// }, [])
 
-	const { playList } = usePlayer();
+	const { playList, togglePlay, isPlaying, currentEpisodeIndex } = usePlayer();
 
 	const episodeList = [...latestEpisodes, ...allEpisodes];
 
@@ -75,8 +75,17 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 
 								<button
 									type="button"
-									onClick={() => playList(episodeList, index)}>
-									<img src="/play-green.svg" alt="Play episode" />
+									// onClick={() => playList(episodeList, index)}>
+									onClick={
+										isPlaying && index === currentEpisodeIndex
+											? togglePlay
+											: () => playList(episodeList, index)
+									}>
+									{isPlaying && index === currentEpisodeIndex ? (
+										<img src="/pause-green.svg" alt="Pause episode" />
+									) : (
+										<img src="/play-green.svg" alt="Play episode" />
+									)}
 								</button>
 							</li>
 						);
@@ -122,10 +131,16 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 									<td>
 										<button
 											type="button"
-											onClick={() =>
-												playList(episodeList, index + latestEpisodes.length)
+											onClick={
+												isPlaying && index + latestEpisodes.length === currentEpisodeIndex
+													? togglePlay
+													: () => playList(episodeList, index + latestEpisodes.length)
 											}>
-											<img src="/play-green.svg" alt="Play episode" />
+											{isPlaying && index + latestEpisodes.length === currentEpisodeIndex ? (
+												<img src="/pause-green.svg" alt="Pause episode" />
+											) : (
+												<img src="/play-green.svg" alt="Play episode" />
+											)}
 										</button>
 									</td>
 								</tr>
